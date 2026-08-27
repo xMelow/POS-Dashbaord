@@ -1,12 +1,13 @@
+import Map from "./components/Map";
 
 
-function App() {
+export default function App() {
 
   return (
     <div>
-      <h1 className="font-bold">Dashboard</h1>
+      <h1 className="font-bold">Park-o-Sign & EagleBe map</h1>
+
+      <Map />
     </div>
   )
 }
-
-export default App
