@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PosDashbaord.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95cc30c776371b61069c945d2aeed3c899e6c0aa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e604e0510b8b69f7ad8c481acf27dfe8cfba6fb2")]
 [assembly: System.Reflection.AssemblyProductAttribute("PosDashbaord.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PosDashbaord.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
