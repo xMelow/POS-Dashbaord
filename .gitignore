@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------
+# OS / editor
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ---------------------------------------------------------------------------
+# .NET backend (backend/PosDashbaord.Api)
+# ---------------------------------------------------------------------------
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET / EF Core
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Local secrets / environment
+appsettings.*.local.json
+secrets.json
+*.pfx
+
+# ---------------------------------------------------------------------------
+# Node / Vite / React frontend (frontend/)
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# TypeScript build info
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Env files
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Test / coverage
+# ---------------------------------------------------------------------------
+coverage/
+.nyc_output/
+[Tt]est[Rr]esults/
