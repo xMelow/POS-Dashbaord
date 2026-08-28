@@ -1,1 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-bg: #0b1220;
+  --color-panel: #101a2c;
+  --color-grid: #1c2a44;
+  --color-line: #2a3a5c;
+  --color-ink: #e7edf7;
+  --color-sub: #8fa2c2;
+  --color-eagle: #38bdf8;
+  --color-pos: #f5a524;
+  --color-none: #24314d;
+}
+
+body {
+  background:
+    var(--color-bg);
+  color: var(--color-ink);
+}

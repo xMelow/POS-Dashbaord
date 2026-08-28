@@ -9,30 +9,21 @@ import type { Municipality } from "../api/client";
 
 interface MunicipalityFeatureProperties {
   nis: string;
-  name_nl: string;
-  name_fr: string;
 }
 
 interface MapProps {
   municipalities: Municipality[];
+  onSelect: (municipality: Municipality | null) => void;
 }
-
-const COLORS = {
-  both: "#a78bfa",
-  pos: "#f5a524",
-  eagle: "#38bdf8",
-  none: "#c9d6e8",
-};
 
 function colorFor(municipality: Municipality | undefined): string {
-  if (!municipality) return COLORS.none;
-  if (municipality.isPosCustomer && municipality.isEagleBeActive) return COLORS.both;
-  if (municipality.isPosCustomer) return COLORS.pos;
-  if (municipality.isEagleBeActive) return COLORS.eagle;
-  return COLORS.none;
+  if (!municipality) return "var(--color-none)";
+  if (municipality.isEagleBeActive) return "var(--color-eagle)"; // implies POS too
+  if (municipality.isPosCustomer) return "var(--color-pos)";
+  return "var(--color-none)";
 }
 
-export default function Map({ municipalities }: MapProps) {
+export default function Map({ municipalities, onSelect }: MapProps) {
   const byRefnis: Record<string, Municipality> = Object.fromEntries(
     municipalities.filter((m) => m.refnisCode).map((m) => [m.refnisCode as string, m])
   );
@@ -43,7 +34,7 @@ export default function Map({ municipalities }: MapProps) {
       projectionConfig={{ center: createCoordinates(4.5, 50.6), scale: 8000 }}
       width={640}
       height={520}
-      style={{ width: "100%", height: "auto" }}
+      style={{ width: "100%", height: "100%" }}
     >
       <Geographies geography={belgiumTopology}>
         {({ geographies }) =>
@@ -55,11 +46,12 @@ export default function Map({ municipalities }: MapProps) {
                 key={props.nis}
                 geography={geo}
                 fill={colorFor(municipality)}
-                stroke="#0b1220"
+                stroke="var(--color-ink)"
                 strokeWidth={0.25}
+                onClick={() => onSelect(municipality ?? null)}
                 style={{
-                  default: { outline: "none" },
-                  hover: { fill: "#475569", outline: "none" },
+                  default: { outline: "none", cursor: "pointer" },
+                  hover: { outline: "none", filter: "brightness(0.85)", cursor: "pointer" },
                   pressed: { outline: "none" },
                 }}
               />
