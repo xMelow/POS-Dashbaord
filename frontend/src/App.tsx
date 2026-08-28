@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Map from "./components/Map";
-import Legend from "./components/Legend";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./api/client";
 
@@ -14,8 +13,8 @@ function App() {
 
   const stats = [
     { label: "EagleBe", count: eagle, color: "var(--color-eagle)" },
-    { label: "POS only", count: posOnly, color: "var(--color-pos)" },
-    { label: "Neither", count: none, color: "var(--color-none)" },
+    { label: "Park-O-Sign", count: posOnly, color: "var(--color-pos)" },
+    { label: "Geen", count: none, color: "var(--color-none)" },
   ];
 
   if (loading) {
@@ -35,10 +34,12 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="px-6 pt-6 pb-4">
-        <h1 className="text-3xl font-bold tracking-tight">POS &amp; EagleBe — per gemeente</h1>
-        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs uppercase tracking-wide text-sub">
+    <div className="fixed inset-0 overflow-hidden bg-panel">
+      <Map municipalities={municipalities} onSelect={setSelected} />
+
+      <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
+        <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs tracking-wide text-sub">
           {stats.map((s) => (
             <span key={s.label} className="flex items-center gap-2">
               <span
@@ -51,26 +52,17 @@ function App() {
         </div>
       </header>
 
-      <div className="relative mx-6 mb-6 flex-1 overflow-hidden rounded-lg border border-line bg-panel">
-        <Map municipalities={municipalities} onSelect={setSelected} />
-
-        <div className="absolute bottom-4 left-4 rounded-md border border-line bg-bg/90 p-3">
-          <Legend />
-        </div>
-
-        <div className="absolute top-4 right-4 max-w-[220px] rounded-md border border-line bg-bg/90 p-3 font-mono text-xs">
-          <p className="mb-2 uppercase tracking-wide text-sub">Selected</p>
-          {selected ? (
-            <dl className="space-y-1">
-              <div><dt className="inline text-sub">Name </dt><dd className="inline">{selected.name}</dd></div>
-              <div><dt className="inline text-sub">Province </dt><dd className="inline">{selected.province}</dd></div>
-              <div><dt className="inline text-sub">NIS </dt><dd className="inline">{selected.refnisCode ?? "—"}</dd></div>
-              <div><dt className="inline text-sub">Status </dt><dd className="inline">{selected.status}</dd></div>
-            </dl>
-          ) : (
-            <p className="text-sub">Click a gemeente</p>
-          )}
-        </div>
+      <div className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm">
+        <p className="mb-2 uppercase tracking-wide text-sub">Gemeente</p>
+        {selected ? (
+          <dl className="space-y-1">
+            <div><dt className="inline text-sub">Naam </dt><dd className="">{selected.name}</dd></div>
+            <div><dt className="inline text-sub">Provincie </dt><dd className="">{selected.province}</dd></div>
+            <div><dt className="inline text-sub">Status </dt><dd className="">{selected.status}</dd></div>
+          </dl>
+        ) : (
+          <p className="text-sub">Click a gemeente</p>
+        )}
       </div>
     </div>
   );

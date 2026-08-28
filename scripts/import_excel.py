@@ -74,12 +74,10 @@ def parse_postal_codes(raw) -> str:
 
 def status_for(is_pos_customer: bool, is_eaglebe_active: bool) -> str:
     if is_pos_customer and is_eaglebe_active:
-        return "POS + EagleBe"
+        return "Park-O-Sign + EagleBe"
     if is_pos_customer:
-        return "POS only"
-    if is_eaglebe_active:
-        return "EagleBe only"
-    return "Neither"
+        return "Park-O-Sign"
+    return "Geen"
 
 
 def main() -> None:
