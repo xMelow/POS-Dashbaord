@@ -1,5 +1,5 @@
 
-namespace Models;
+namespace PosEagleDashboard.Api.Models;
 
 public class Municipality
 {
@@ -10,5 +10,5 @@ public class Municipality
     public string Province { get; set; } = string.Empty;
     public List<string> PostalCodes { get; set; } = [];
     public string Status { get; set; } = string.Empty;
-    
+
 }
