@@ -8,7 +8,10 @@ public class Municipality
     public string? RefnisCode { get; set; }
     public string Region { get; set; } = string.Empty;
     public string Province { get; set; } = string.Empty;
-    public List<string> PostalCodes { get; set; } = [];
+    public List<int> PostalCodes { get; set; } = new();
     public string Status { get; set; } = string.Empty;
+    public bool IsPosCustomer { get; set; }
+    public bool IsEagleBeActive { get; set; }
+    public string LastUpdated { get; set; } = string.Empty;
 
 }
