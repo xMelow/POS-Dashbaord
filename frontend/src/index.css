@@ -11,6 +11,10 @@
   --color-eagle: #38bdf8;
   --color-pos: #f5a524;
   --color-none: #24314d;
+  --color-afgekeurd: #ef4444;
+  --color-prospectie: #22c55e;
+  --color-uitgesteld: #a855f7;
+  --color-lopend: #facc15;
 }
 
 body {

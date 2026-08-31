@@ -15,13 +15,34 @@ function App() {
     setSelected(updated);
   }
 
-  const eagle = municipalities.filter((m) => m.isEagleBeActive).length;
-  const posOnly = municipalities.filter((m) => m.isPosCustomer && !m.isEagleBeActive).length;
-  const none = municipalities.filter((m) => !m.isPosCustomer && !m.isEagleBeActive).length;
+  // Statuses that colour the map on their own, overriding the product colour.
+  const STATUS_COLORS: Record<string, string> = {
+    Prospectie: "var(--color-prospectie)",
+    Uitgesteld: "var(--color-uitgesteld)",
+    Lopend: "var(--color-lopend)",
+    Afgekeurd: "var(--color-afgekeurd)",
+  };
+  const hasStatusColor = (m: Municipality) => m.status in STATUS_COLORS;
+
+  const prospectie = municipalities.filter((m) => m.status === "Prospectie").length;
+  const uitgesteld = municipalities.filter((m) => m.status === "Uitgesteld").length;
+  const lopend = municipalities.filter((m) => m.status === "Lopend").length;
+  const afgekeurd = municipalities.filter((m) => m.status === "Afgekeurd").length;
+  const eagle = municipalities.filter((m) => m.isEagleBeActive && !hasStatusColor(m)).length;
+  const posOnly = municipalities.filter(
+    (m) => m.isPosCustomer && !m.isEagleBeActive && !hasStatusColor(m),
+  ).length;
+  const none = municipalities.filter(
+    (m) => !m.isPosCustomer && !m.isEagleBeActive && !hasStatusColor(m),
+  ).length;
 
   const stats = [
     { label: "EagleBe", count: eagle, color: "var(--color-eagle)" },
     { label: "Park-O-Sign", count: posOnly, color: "var(--color-pos)" },
+    { label: "Prospectie", count: prospectie, color: "var(--color-prospectie)" },
+    { label: "Uitgesteld", count: uitgesteld, color: "var(--color-uitgesteld)" },
+    { label: "Lopend", count: lopend, color: "var(--color-lopend)" },
+    { label: "Afgekeurd", count: afgekeurd, color: "var(--color-afgekeurd)" },
     { label: "Geen", count: none, color: "var(--color-none)" },
   ];
 

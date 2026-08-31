@@ -28,6 +28,10 @@ interface MapProps {
 
 function colorFor(municipality: Municipality | undefined): string {
   if (!municipality) return "var(--color-none)";
+  if (municipality.status === "Afgekeurd") return "var(--color-afgekeurd)";
+  if (municipality.status === "Prospectie") return "var(--color-prospectie)";
+  if (municipality.status === "Uitgesteld") return "var(--color-uitgesteld)";
+  if (municipality.status === "Lopend") return "var(--color-lopend)";
   if (municipality.isEagleBeActive) return "var(--color-eagle)";
   if (municipality.isPosCustomer) return "var(--color-pos)";
   return "var(--color-none)";
