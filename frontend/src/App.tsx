@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Map from "./components/Map";
+import MunicipalitySearch from "./components/MunicipalitySearch";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./api/client";
 
@@ -36,6 +37,7 @@ function App() {
   return (
     <div className="fixed inset-0 overflow-hidden bg-panel">
       <Map municipalities={municipalities} onSelect={setSelected} />
+      <MunicipalitySearch municipalities={municipalities} onSelect={setSelected} />
 
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
