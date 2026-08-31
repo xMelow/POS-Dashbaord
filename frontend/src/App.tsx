@@ -56,9 +56,11 @@ function App() {
         <p className="mb-2 uppercase tracking-wide text-sub">Gemeente</p>
         {selected ? (
           <dl className="space-y-1">
-            <div><dt className="inline text-sub">Naam </dt><dd className="">{selected.name}</dd></div>
-            <div><dt className="inline text-sub">Provincie </dt><dd className="">{selected.province}</dd></div>
-            <div><dt className="inline text-sub">Status </dt><dd className="">{selected.status}</dd></div>
+            <div><dt className="inline text-sub">Naam </dt><dd>{selected.name}</dd></div>
+            <div><dt className="inline text-sub">Provincie </dt><dd>{selected.province}</dd></div>
+            <div><dt className="inline text-sub">Postcode(s) </dt><dd>{selected.postalCodes}</dd></div>
+            <div><dt className="inline text-sub">Setup </dt><dd>{selected.setup}</dd></div>
+            <div><dt className="inline text-sub">Status </dt><dd>{selected.status}</dd></div>
           </dl>
         ) : (
           <p className="text-sub">Click a gemeente</p>

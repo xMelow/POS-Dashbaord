@@ -4,18 +4,22 @@ Excel export and loads it into the backend's SQLite database — including an
 automatically matched RefnisCode (NIS code) for each municipality, looked up
 against the same belgium.json topology that powers the map.
 
-Table/column names here match the EF Core "Municipality" model exactly, so
-this inserts straight into the table EF Core's EnsureCreated() already made.
+Table/column names here match the EF Core "Municipality" model exactly. The
+script drops and recreates the Municipalities table, so it stays in sync when
+the model gains columns (e.g. the Setup/Status split) without needing an EF
+migration; EF Core's EnsureCreated() then just finds the table already there.
 
 Usage:
     pip install pandas openpyxl
     python import_excel.py path/to/Belgische_gemeenten_dashboard_POS_EagleBe.xlsx path/to/dashboard.db path/to/belgium.json
 
-This is a RESEED, not a merge: it clears the Municipalities table and reloads
-from the Excel file every time it runs. That's intentional while the Excel is
-still the source of truth. Once editing through the app is live, re-running
-this would overwrite any edits made there — at that point this script becomes
-a one-time initializer only, not something to run repeatedly.
+This is a RESEED, not a merge: it drops and recreates the Municipalities table
+and reloads from the Excel file every time it runs. That's intentional while
+the Excel is still the source of truth. Note that "Status" is NOT in the Excel
+— it tracks the state of a sold product (in behandeling / afgerond / …) and is
+edited through the app, so a reseed wipes it back to empty. Once editing through
+the app is live, this script becomes a one-time initializer only, not something
+to run repeatedly.
 """
 
 import json
@@ -72,12 +76,20 @@ def parse_postal_codes(raw) -> str:
     return json.dumps(codes)
 
 
-def status_for(is_pos_customer: bool, is_eaglebe_active: bool) -> str:
+def setup_for(is_pos_customer: bool, is_eaglebe_active: bool) -> str:
+    """Which products a municipality runs. This is what the old single
+    'Status' column held; it's now called 'Setup'."""
     if is_pos_customer and is_eaglebe_active:
         return "Park-O-Sign + EagleBe"
     if is_pos_customer:
         return "Park-O-Sign"
     return "Geen"
+
+
+# 'Status' is not in the Excel. It tracks the state of a sold product
+# (e.g. in behandeling / afgerond) and is maintained through the app, so
+# a fresh import just seeds it empty.
+DEFAULT_STATUS = ""
 
 
 def main() -> None:
@@ -99,8 +111,12 @@ def main() -> None:
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
+    # Drop + recreate so schema changes (like the added Setup/Status split)
+    # take effect on re-run. EF Core's EnsureCreated() reads columns by name,
+    # so this table stays compatible with the Municipality model.
+    cur.execute("DROP TABLE IF EXISTS Municipalities")
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS Municipalities (
+        CREATE TABLE Municipalities (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             RefnisCode TEXT,
             Region TEXT NOT NULL,
@@ -109,12 +125,11 @@ def main() -> None:
             PostalCodes TEXT NOT NULL DEFAULT '[]',
             IsPosCustomer INTEGER NOT NULL,
             IsEagleBeActive INTEGER NOT NULL,
+            Setup TEXT NOT NULL,
             Status TEXT NOT NULL,
             LastUpdated TEXT NOT NULL
         )
     """)
-
-    cur.execute("DELETE FROM Municipalities")
 
     rows = []
     unmatched = []
@@ -130,14 +145,15 @@ def main() -> None:
             parse_postal_codes(row["Postcode(s)"]),
             int(row["is_pos_customer"]),
             int(row["is_eaglebe_active"]),
-            status_for(row["is_pos_customer"], row["is_eaglebe_active"]),
+            setup_for(row["is_pos_customer"], row["is_eaglebe_active"]),
+            DEFAULT_STATUS,
         ))
 
     cur.executemany(
         """
         INSERT INTO Municipalities
-            (RefnisCode, Region, Province, Name, PostalCodes, IsPosCustomer, IsEagleBeActive, Status, LastUpdated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+            (RefnisCode, Region, Province, Name, PostalCodes, IsPosCustomer, IsEagleBeActive, Setup, Status, LastUpdated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
         """,
         rows,
     )

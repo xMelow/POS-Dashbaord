@@ -7,6 +7,7 @@ export interface Municipality {
   postalCodes: number[];
   isPosCustomer: boolean;
   isEagleBeActive: boolean;
+  setup: string;
   status: string;
   lastUpdated: string;
 }

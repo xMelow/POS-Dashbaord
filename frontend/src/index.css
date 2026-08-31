@@ -18,3 +18,8 @@ body {
     var(--color-bg);
   color: var(--color-ink);
 }
+
+.rsm-geography:focus,
+.rsm-geography:focus-visible {
+  outline: none;
+}
