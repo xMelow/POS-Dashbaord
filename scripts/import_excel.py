@@ -15,11 +15,10 @@ Usage:
 
 This is a RESEED, not a merge: it drops and recreates the Municipalities table
 and reloads from the Excel file every time it runs. That's intentional while
-the Excel is still the source of truth. Note that "Status" is NOT in the Excel
-— it tracks the state of a sold product (in behandeling / afgerond / …) and is
-edited through the app, so a reseed wipes it back to empty. Once editing through
-the app is live, this script becomes a one-time initializer only, not something
-to run repeatedly.
+the Excel is still the source of truth. "Status" now comes from the Excel too
+(sale/lead state — Prospectie / Order / …), so any Status edits made through the
+app are overwritten on re-run. Once editing through the app is live, this script
+becomes a one-time initializer only, not something to run repeatedly.
 """
 
 import json
@@ -86,10 +85,35 @@ def setup_for(is_pos_customer: bool, is_eaglebe_active: bool) -> str:
     return "Geen"
 
 
-# 'Status' is not in the Excel. It tracks the state of a sold product
-# (e.g. in behandeling / afgerond) and is maintained through the app, so
-# a fresh import just seeds it empty.
-DEFAULT_STATUS = ""
+# Canonical sale/lead states, kept in sync with STATUS_OPTIONS in the frontend
+# GemeentePanel. "" (blank) is also valid.
+CANONICAL_STATUSES = ["Prospectie", "Afgekeurd", "Uitgesteld", "Lopend", "Order"]
+STATUS_VALUES = {"", *CANONICAL_STATUSES}
+
+
+def parse_status(raw) -> str:
+    """Normalise the messy Excel 'Status' cell to one canonical value.
+
+    The column mixes casing ('order' vs 'Order') and appends a '/ EB user'
+    marker (EagleBe user) that has no bearing on the status. Rules:
+      - NaN / blank            -> ''
+      - drop any '/ ...' suffix (the EB-user marker)
+      - contains 'order'       -> 'Order'
+      - otherwise case-insensitive match against CANONICAL_STATUSES
+      - anything else          -> kept as-is (and reported at the end)
+    """
+    if pd.isna(raw):
+        return ""
+    text = str(raw).split("/")[0].strip()
+    if not text:
+        return ""
+    lowered = text.lower()
+    if "order" in lowered:
+        return "Order"
+    for canonical in CANONICAL_STATUSES:
+        if lowered == canonical.lower():
+            return canonical
+    return text
 
 
 def main() -> None:
@@ -133,10 +157,14 @@ def main() -> None:
 
     rows = []
     unmatched = []
+    unexpected_status = set()
     for _, row in df.iterrows():
         nis = find_nis(row["Gemeente"], nis_lookup)
         if nis is None:
             unmatched.append(row["Gemeente"])
+        status = parse_status(row["Status"])
+        if status not in STATUS_VALUES:
+            unexpected_status.add(status)
         rows.append((
             nis,
             row["Gewest"],
@@ -146,7 +174,7 @@ def main() -> None:
             int(row["is_pos_customer"]),
             int(row["is_eaglebe_active"]),
             setup_for(row["is_pos_customer"], row["is_eaglebe_active"]),
-            DEFAULT_STATUS,
+            status,
         ))
 
     cur.executemany(
@@ -167,6 +195,10 @@ def main() -> None:
         print("No NIS match found for (RefnisCode left NULL — add an alias to MANUAL_ALIASES):")
         for name in unmatched:
             print(" -", name)
+    if unexpected_status:
+        print("Unexpected Status values (imported as-is — update STATUS_VALUES if valid):")
+        for value in sorted(unexpected_status):
+            print(" -", repr(value))
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ interface GemeentePanelProps {
 }
 
 const SETUP_OPTIONS = ["Geen", "Park-O-Sign", "EagleBe"];
-const STATUS_OPTIONS = ["", "Nieuw", "In behandeling", "Afgerond"];
+const STATUS_OPTIONS = ["", "Prospectie", "Afgekeurd", "Uitgesteld", "Lopend", "Order"];
 
 function withCurrent(options: string[], current: string): string[] {
   return options.includes(current) ? options : [current, ...options];
