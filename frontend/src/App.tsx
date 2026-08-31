@@ -58,7 +58,7 @@ function App() {
           <dl className="space-y-1">
             <div><dt className="inline text-sub">Naam </dt><dd>{selected.name}</dd></div>
             <div><dt className="inline text-sub">Provincie </dt><dd>{selected.province}</dd></div>
-            <div><dt className="inline text-sub">Postcode(s) </dt><dd>{selected.postalCodes}</dd></div>
+            <div><dt className="inline text-sub">Postcode(s) </dt><dd>{selected.postalCodes.join(", ")}</dd></div>
             <div><dt className="inline text-sub">Setup </dt><dd>{selected.setup}</dd></div>
             <div><dt className="inline text-sub">Status </dt><dd>{selected.status}</dd></div>
           </dl>
