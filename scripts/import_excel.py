@@ -80,7 +80,7 @@ def setup_for(is_pos_customer: bool, is_eaglebe_active: bool) -> str:
     """Which products a municipality runs. This is what the old single
     'Status' column held; it's now called 'Setup'."""
     if is_pos_customer and is_eaglebe_active:
-        return "Park-O-Sign + EagleBe"
+        return "EagleBe"
     if is_pos_customer:
         return "Park-O-Sign"
     return "Geen"

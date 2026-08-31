@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PosEagleDashboard.Api.Data;
 using PosEagleDashboard.Api.Models;
+using PosEagleDashboard.Api.DTO;
 
 namespace PosEagleDashboard.Api.Controllers;
 
@@ -20,5 +21,22 @@ public class MunicipalitiesController : ControllerBase
     public async Task<IEnumerable<Municipality>> GetMunicipalities()
     {
         return await _dbContext.Municipalities.ToListAsync();
+    }
+
+    [HttpPost("{id:int}")]
+    public async Task<ActionResult<Municipality>> UpdateMunicipality(int id, [FromBody] UpdateMunicipalityRequest request)
+    {
+        var municipality = await _dbContext.Municipalities.FindAsync(id);
+        if (municipality is null)
+        {
+            return NotFound();
+        }
+
+        municipality.Setup = request.Setup;
+        municipality.Status = request.Status;
+        municipality.LastUpdated = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+        await _dbContext.SaveChangesAsync();
+        return municipality;
     }
 }
