@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ComposableMap, Geographies, Geography, createCoordinates } from "@vnedyalk0v/react19-simple-maps";
 import belgiumTopology from "../data/belgium.json";
-import type { Municipality } from "../api/client";
+import type { Municipality } from "../types/municipality";
 
 function useViewportSize() {
   const [size, setSize] = useState(() => ({
@@ -22,6 +22,7 @@ interface MunicipalityFeatureProperties {
 
 interface MapProps {
   municipalities: Municipality[];
+  selected: Municipality | null;
   onSelect: (municipality: Municipality | null) => void;
 }
 
@@ -32,12 +33,14 @@ function colorFor(municipality: Municipality | undefined): string {
   return "var(--color-none)";
 }
 
-export default function Map({ municipalities, onSelect }: MapProps) {
+export default function Map({ municipalities, selected, onSelect }: MapProps) {
   const { width, height } = useViewportSize();
 
   const byRefnis: Record<string, Municipality> = Object.fromEntries(
     municipalities.filter((m) => m.refnisCode).map((m) => [m.refnisCode as string, m])
   );
+
+  const selectedNis = selected?.refnisCode ?? null;
 
   return (
     <ComposableMap
@@ -51,27 +54,47 @@ export default function Map({ municipalities, onSelect }: MapProps) {
       style={{ width: "100%", height: "100%" }}
     >
       <Geographies geography={belgiumTopology}>
-        {({ geographies }) =>
-          geographies.map((geo) => {
+        {({ geographies }) => {
+          // Draw the selected municipality last so its ring paints on top of
+          // its neighbours instead of being overdrawn by them.
+          const ordered = selectedNis
+            ? [...geographies].sort((a, b) => {
+                const aSel = (a.properties as MunicipalityFeatureProperties).nis === selectedNis;
+                const bSel = (b.properties as MunicipalityFeatureProperties).nis === selectedNis;
+                return Number(aSel) - Number(bSel);
+              })
+            : geographies;
+
+          return ordered.map((geo) => {
             const props = geo.properties as MunicipalityFeatureProperties;
             const municipality = byRefnis[props.nis];
+            const isSelected = selectedNis != null && props.nis === selectedNis;
             return (
               <Geography
                 key={props.nis}
                 geography={geo}
                 fill={colorFor(municipality)}
-                stroke="var(--color-ink)"
-                strokeWidth={0.25}
-                onClick={() => onSelect(municipality ?? null)}
+                stroke={isSelected ? "#ffffff" : "var(--color-ink)"}
+                strokeWidth={isSelected ? 1.75 : 0.25}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSelect(municipality ?? null);
+                }}
                 style={{
-                  default: { outline: "none", cursor: "pointer" },
+                  default: {
+                    outline: "none",
+                    cursor: "pointer",
+                    filter: isSelected
+                      ? "brightness(1.4) drop-shadow(0 0 3px rgba(255,255,255,0.7))"
+                      : undefined,
+                  },
                   hover: { outline: "none", filter: "brightness(0.85)", cursor: "pointer" },
                   pressed: { outline: "none" },
                 }}
               />
             );
-          })
-        }
+          });
+        }}
       </Geographies>
     </ComposableMap>
   );

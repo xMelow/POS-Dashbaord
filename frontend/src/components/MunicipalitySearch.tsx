@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import type { Municipality } from "../api/client";
+import type { Municipality } from "../types/municipality";
 
 interface MunicipalitySearchProps {
   municipalities: Municipality[];
@@ -33,7 +33,10 @@ export default function MunicipalitySearch({ municipalities, onSelect }: Municip
   }
 
   return (
-    <div className="absolute right-6 top-60 w-[18rem] font-mono text-sm">
+    <div
+      className="absolute right-6 top-60 w-[18rem] font-mono text-sm"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="relative">
         <input
           ref={inputRef}

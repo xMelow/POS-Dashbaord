@@ -42,8 +42,11 @@ function App() {
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-panel">
-      <Map municipalities={municipalities} onSelect={setSelected} />
+    <div
+      className="fixed inset-0 overflow-hidden bg-panel"
+      onClick={() => setSelected(null)}
+    >
+      <Map municipalities={municipalities} selected={selected} onSelect={setSelected} />
       <MunicipalitySearch municipalities={municipalities} onSelect={setSelected} />
 
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
@@ -61,7 +64,10 @@ function App() {
         </div>
       </header>
 
-      <div className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm">
+      <div
+        className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
         <p className="mb-2 uppercase tracking-wide text-sub">Gemeente</p>
         {selected ? (
           <GemeentePanel key={selected.id} municipality={selected} onUpdated={handleUpdated} />
