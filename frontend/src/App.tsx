@@ -1,12 +1,19 @@
 import { useState } from "react";
 import Map from "./components/Map";
 import MunicipalitySearch from "./components/MunicipalitySearch";
+import GemeentePanel from "./components/GemeentePanel";
 import { useMunicipalities } from "./hooks/useMunicipalities";
-import type { Municipality } from "./api/client";
+import type { Municipality } from "./types/municipality";
+
 
 function App() {
-  const { municipalities, loading, error } = useMunicipalities();
+  const { municipalities, loading, error, replaceMunicipality } = useMunicipalities();
   const [selected, setSelected] = useState<Municipality | null>(null);
+
+  function handleUpdated(updated: Municipality) {
+    replaceMunicipality(updated);
+    setSelected(updated);
+  }
 
   const eagle = municipalities.filter((m) => m.isEagleBeActive).length;
   const posOnly = municipalities.filter((m) => m.isPosCustomer && !m.isEagleBeActive).length;
@@ -57,13 +64,7 @@ function App() {
       <div className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm">
         <p className="mb-2 uppercase tracking-wide text-sub">Gemeente</p>
         {selected ? (
-          <dl className="space-y-1">
-            <div><dt className="inline text-sub">Naam </dt><dd>{selected.name}</dd></div>
-            <div><dt className="inline text-sub">Provincie </dt><dd>{selected.province}</dd></div>
-            <div><dt className="inline text-sub">Postcode(s) </dt><dd>{selected.postalCodes.join(", ")}</dd></div>
-            <div><dt className="inline text-sub">Setup </dt><dd>{selected.setup}</dd></div>
-            <div><dt className="inline text-sub">Status </dt><dd>{selected.status}</dd></div>
-          </dl>
+          <GemeentePanel key={selected.id} municipality={selected} onUpdated={handleUpdated} />
         ) : (
           <p className="text-sub">Click a gemeente</p>
         )}

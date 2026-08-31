@@ -34,6 +34,23 @@ public class MunicipalitiesController : ControllerBase
 
         municipality.Setup = request.Setup;
         municipality.Status = request.Status;
+
+        switch (request.Setup)
+        {
+            case "EagleBe":
+                municipality.IsPosCustomer = true;
+                municipality.IsEagleBeActive = true;
+                break;
+            case "Park-O-Sign":
+                municipality.IsPosCustomer = true;
+                municipality.IsEagleBeActive = false;
+                break;
+            case "Geen":
+                municipality.IsPosCustomer = false;
+                municipality.IsEagleBeActive = false;
+                break;
+        }
+
         municipality.LastUpdated = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
         await _dbContext.SaveChangesAsync();

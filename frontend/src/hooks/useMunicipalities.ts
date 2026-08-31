@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchMunicipalities, type Municipality } from "../api/client";
 
 interface UseMunicipalitiesResult {
   municipalities: Municipality[];
   loading: boolean;
   error: string | null;
+  replaceMunicipality: (municipality: Municipality) => void;
 }
 
 export function useMunicipalities(): UseMunicipalitiesResult {
@@ -31,5 +32,11 @@ export function useMunicipalities(): UseMunicipalitiesResult {
     };
   }, []);
 
-  return { municipalities, loading, error };
+  const replaceMunicipality = useCallback((municipality: Municipality) => {
+    setMunicipalities((prev) =>
+      prev.map((m) => (m.id === municipality.id ? municipality : m)),
+    );
+  }, []);
+
+  return { municipalities, loading, error, replaceMunicipality };
 }
