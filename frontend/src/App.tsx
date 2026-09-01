@@ -3,6 +3,7 @@ import Map from "./components/Map";
 import MunicipalitySearch from "./components/MunicipalitySearch";
 import MunicipalityPanel from "./components/MunicipalityPanel";
 import LegendFilter from "./components/LegendFilter";
+import MunicipalityList from "./components/MunicipalityList";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
 import { CATEGORIES, categoryOf, type CategoryKey } from "./lib/categories";
@@ -72,15 +73,23 @@ function App() {
         <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
       </header>
 
-      <LegendFilter
-        visible={visible}
-        counts={counts}
-        onToggle={toggleCategory}
-        onToggleAll={() =>
-          setVisible(allVisible ? new Set() : new Set(CATEGORIES.map((c) => c.key)))
-        }
-        allVisible={allVisible}
-      />
+      <div className="absolute bottom-6 left-6 top-24 flex w-[17.5rem] flex-col gap-3">
+        <LegendFilter
+          visible={visible}
+          counts={counts}
+          onToggle={toggleCategory}
+          onToggleAll={() =>
+            setVisible(allVisible ? new Set() : new Set(CATEGORIES.map((c) => c.key)))
+          }
+          allVisible={allVisible}
+        />
+        <MunicipalityList
+          municipalities={municipalities}
+          visibleCategories={visible}
+          selected={selected}
+          onSelect={setSelected}
+        />
+      </div>
 
       {selected && (
         <MunicipalityPanel

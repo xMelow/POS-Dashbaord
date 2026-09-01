@@ -17,7 +17,7 @@ export default function LegendFilter({
 }: LegendFilterProps) {
   return (
     <div
-      className="absolute left-6 top-24 w-[17.5rem] rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
+      className="shrink-0 rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 flex items-center justify-between">
