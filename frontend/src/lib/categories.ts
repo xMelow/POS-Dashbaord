@@ -1,7 +1,6 @@
 import type { Municipality } from "../types/municipality";
 
 export type CategoryKey =
-  | "eaglePos"
   | "eagle"
   | "pos"
   | "lopendPos"
@@ -18,7 +17,6 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { key: "eaglePos", label: "EagleBe + Park-O-Sign", color: "var(--color-eagle-pos)" },
   { key: "eagle", label: "EagleBe", color: "var(--color-eagle)" },
   { key: "pos", label: "Park-O-Sign", color: "var(--color-pos)" },
   { key: "lopendPos", label: "Lopend (POS)", color: "var(--color-lopend-pos)" },
@@ -41,7 +39,6 @@ export function categoryOf(municipality: Municipality | undefined): CategoryKey 
   if (municipality.status === "Lopend") {
     return municipality.isPosCustomer ? "lopendPos" : "lopend";
   }
-  if (municipality.isEagleBeActive && municipality.isPosCustomer) return "eaglePos";
   if (municipality.isEagleBeActive) return "eagle";
   if (municipality.isPosCustomer) return "pos";
   return "none";
