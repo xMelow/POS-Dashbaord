@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Map from "./components/Map";
 import MunicipalitySearch from "./components/MunicipalitySearch";
 import GemeentePanel from "./components/GemeentePanel";
+import LegendFilter from "./components/LegendFilter";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
 import { CATEGORIES, categoryOf, type CategoryKey } from "./lib/categories";
@@ -69,36 +70,17 @@ function App() {
 
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
-        <div className="pointer-events-auto mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs tracking-wide text-sub">
-          {CATEGORIES.map((c) => (
-            <label
-              key={c.key}
-              className="flex cursor-pointer items-center gap-2 select-none hover:text-ink"
-            >
-              <input
-                type="checkbox"
-                checked={visible.has(c.key)}
-                onChange={() => toggleCategory(c.key)}
-                className="h-3 w-3 accent-eagle"
-              />
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full border border-white/10"
-                style={{ backgroundColor: c.color }}
-              />
-              {c.label} ({counts[c.key] ?? 0})
-            </label>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              setVisible(allVisible ? new Set() : new Set(CATEGORIES.map((c) => c.key)))
-            }
-            className="rounded border border-line px-2 py-0.5 uppercase tracking-wide hover:text-ink"
-          >
-            {allVisible ? "Niets" : "Alles"}
-          </button>
-        </div>
       </header>
+
+      <LegendFilter
+        visible={visible}
+        counts={counts}
+        onToggle={toggleCategory}
+        onToggleAll={() =>
+          setVisible(allVisible ? new Set() : new Set(CATEGORIES.map((c) => c.key)))
+        }
+        allVisible={allVisible}
+      />
 
       <div
         className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm"

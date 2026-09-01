@@ -5,7 +5,6 @@ export type CategoryKey =
   | "eagle"
   | "pos"
   | "lopendPos"
-  | "lopendEagleBe"
   | "lopend"
   | "prospectie"
   | "uitgesteld"
@@ -23,7 +22,6 @@ export const CATEGORIES: Category[] = [
   { key: "eagle", label: "EagleBe", color: "var(--color-eagle)" },
   { key: "pos", label: "Park-O-Sign", color: "var(--color-pos)" },
   { key: "lopendPos", label: "Lopend (POS)", color: "var(--color-lopend-pos)" },
-  { key: "lopendEagleBe", label: "Lopend (EagleBe)", color: "var(--color-lopend-eagle)" },
   { key: "lopend", label: "Lopend", color: "var(--color-lopend)" },
   { key: "prospectie", label: "Prospectie", color: "var(--color-prospectie)" },
   { key: "uitgesteld", label: "Uitgesteld", color: "var(--color-uitgesteld)" },
@@ -41,9 +39,7 @@ export function categoryOf(municipality: Municipality | undefined): CategoryKey 
   if (municipality.status === "Prospectie") return "prospectie";
   if (municipality.status === "Uitgesteld") return "uitgesteld";
   if (municipality.status === "Lopend") {
-    if (municipality.isPosCustomer) return "lopendPos";
-    if (municipality.isEagleBeActive) return "lopendEagleBe";
-    return "lopend";
+    return municipality.isPosCustomer ? "lopendPos" : "lopend";
   }
   if (municipality.isEagleBeActive && municipality.isPosCustomer) return "eaglePos";
   if (municipality.isEagleBeActive) return "eagle";
