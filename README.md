@@ -7,7 +7,7 @@ in place; changes are written straight to the database.
 
 ## Preview
 
-![preview image of the dashboard](projectPreview.png)
+![preview image of the dashboard](dashboardPreview.png)
 
 ## Stack
 
