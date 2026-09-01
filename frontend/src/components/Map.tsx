@@ -31,7 +31,10 @@ function colorFor(municipality: Municipality | undefined): string {
   if (municipality.status === "Afgekeurd") return "var(--color-afgekeurd)";
   if (municipality.status === "Prospectie") return "var(--color-prospectie)";
   if (municipality.status === "Uitgesteld") return "var(--color-uitgesteld)";
-  if (municipality.status === "Lopend") return "var(--color-lopend)";
+  if (municipality.status === "Lopend") {
+    return municipality.isPosCustomer ? "var(--color-lopend-pos)" : "var(--color-lopend)";
+  }
+  if (municipality.isEagleBeActive && municipality.isPosCustomer) return "var(--color-eagle-pos)";
   if (municipality.isEagleBeActive) return "var(--color-eagle)";
   if (municipality.isPosCustomer) return "var(--color-pos)";
   return "var(--color-none)";

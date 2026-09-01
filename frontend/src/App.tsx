@@ -24,9 +24,15 @@ function App() {
 
   const prospectie = municipalities.filter((m) => m.status === "Prospectie").length;
   const uitgesteld = municipalities.filter((m) => m.status === "Uitgesteld").length;
-  const lopend = municipalities.filter((m) => m.status === "Lopend").length;
+  const lopendPos = municipalities.filter((m) => m.status === "Lopend" && m.isPosCustomer).length;
+  const lopend = municipalities.filter((m) => m.status === "Lopend" && !m.isPosCustomer).length;
   const afgekeurd = municipalities.filter((m) => m.status === "Afgekeurd").length;
-  const eagle = municipalities.filter((m) => m.isEagleBeActive && !hasStatusColor(m)).length;
+  const eagleAndPos = municipalities.filter(
+    (m) => m.isEagleBeActive && m.isPosCustomer && !hasStatusColor(m),
+  ).length;
+  const eagle = municipalities.filter(
+    (m) => m.isEagleBeActive && !m.isPosCustomer && !hasStatusColor(m),
+  ).length;
   const posOnly = municipalities.filter(
     (m) => m.isPosCustomer && !m.isEagleBeActive && !hasStatusColor(m),
   ).length;
@@ -35,8 +41,10 @@ function App() {
   ).length;
 
   const stats = [
+    { label: "EagleBe + Park-O-Sign", count: eagleAndPos, color: "var(--color-eagle-pos)" },
     { label: "EagleBe", count: eagle, color: "var(--color-eagle)" },
     { label: "Park-O-Sign", count: posOnly, color: "var(--color-pos)" },
+    { label: "Lopend (POS)", count: lopendPos, color: "var(--color-lopend-pos)" },
     { label: "Lopend", count: lopend, color: "var(--color-lopend)" },
     { label: "Prospectie", count: prospectie, color: "var(--color-prospectie)" },
     { label: "Uitgesteld", count: uitgesteld, color: "var(--color-uitgesteld)" },
