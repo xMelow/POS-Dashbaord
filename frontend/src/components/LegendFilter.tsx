@@ -17,7 +17,7 @@ export default function LegendFilter({
 }: LegendFilterProps) {
   return (
     <div
-      className="absolute bottom-6 left-6 w-[17rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm"
+      className="absolute left-6 top-24 w-[17.5rem] rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="mb-2 flex items-center justify-between">
@@ -25,17 +25,17 @@ export default function LegendFilter({
         <button
           type="button"
           onClick={onToggleAll}
-          className="rounded border border-line px-2 py-0.5 text-xs uppercase tracking-wide text-sub hover:border-eagle hover:text-ink"
+          className="rounded border border-line px-2 py-0.5 text-[11px] uppercase tracking-wide text-sub hover:border-eagle hover:text-ink"
         >
           {allVisible ? "Niets" : "Alles"}
         </button>
       </div>
-      <ul className="space-y-1 tracking-wide text-sub">
+      <ul className="space-y-0.5 tracking-wide text-sub">
         {CATEGORIES.map((c) => {
           const on = visible.has(c.key);
           return (
             <li key={c.key}>
-              <label className="flex cursor-pointer items-center gap-2.5 rounded px-1 py-1 select-none hover:bg-line/30 hover:text-ink">
+              <label className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 select-none hover:bg-line/30 hover:text-ink">
                 <input
                   type="checkbox"
                   checked={on}
@@ -53,8 +53,8 @@ export default function LegendFilter({
                   className="h-2.5 w-2.5 shrink-0 rounded-full border border-white/10"
                   style={{ backgroundColor: c.color }}
                 />
-                <span className="flex-1">{c.label}</span>
-                <span className="tabular-nums text-xs">{counts[c.key] ?? 0}</span>
+                <span className="flex-1 whitespace-nowrap">{c.label}</span>
+                <span className="tabular-nums text-[11px]">{counts[c.key] ?? 0}</span>
               </label>
             </li>
           );
