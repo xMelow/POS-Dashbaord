@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Map from "./components/Map";
 import MunicipalitySearch from "./components/MunicipalitySearch";
 import GemeentePanel from "./components/GemeentePanel";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
+import { CATEGORIES, categoryOf, type CategoryKey } from "./lib/categories";
 
 function App() {
   const { municipalities, loading, error, replaceMunicipality } = useMunicipalities();
@@ -14,43 +15,28 @@ function App() {
     setSelected(updated);
   }
 
-  const STATUS_COLORS: Record<string, string> = {
-    Prospectie: "var(--color-prospectie)",
-    Uitgesteld: "var(--color-uitgesteld)",
-    Lopend: "var(--color-lopend)",
-    Afgekeurd: "var(--color-afgekeurd)",
-  };
-  const hasStatusColor = (m: Municipality) => m.status in STATUS_COLORS;
+  const [visible, setVisible] = useState<Set<CategoryKey>>(
+    () => new Set(CATEGORIES.map((c) => c.key)),
+  );
+  const allVisible = visible.size === CATEGORIES.length;
 
-  const prospectie = municipalities.filter((m) => m.status === "Prospectie").length;
-  const uitgesteld = municipalities.filter((m) => m.status === "Uitgesteld").length;
-  const lopendPos = municipalities.filter((m) => m.status === "Lopend" && m.isPosCustomer).length;
-  const lopend = municipalities.filter((m) => m.status === "Lopend" && !m.isPosCustomer).length;
-  const afgekeurd = municipalities.filter((m) => m.status === "Afgekeurd").length;
-  const eagleAndPos = municipalities.filter(
-    (m) => m.isEagleBeActive && m.isPosCustomer && !hasStatusColor(m),
-  ).length;
-  const eagle = municipalities.filter(
-    (m) => m.isEagleBeActive && !m.isPosCustomer && !hasStatusColor(m),
-  ).length;
-  const posOnly = municipalities.filter(
-    (m) => m.isPosCustomer && !m.isEagleBeActive && !hasStatusColor(m),
-  ).length;
-  const none = municipalities.filter(
-    (m) => !m.isPosCustomer && !m.isEagleBeActive && !hasStatusColor(m),
-  ).length;
+  function toggleCategory(key: CategoryKey) {
+    setVisible((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
-  const stats = [
-    { label: "EagleBe + Park-O-Sign", count: eagleAndPos, color: "var(--color-eagle-pos)" },
-    { label: "EagleBe", count: eagle, color: "var(--color-eagle)" },
-    { label: "Park-O-Sign", count: posOnly, color: "var(--color-pos)" },
-    { label: "Lopend (POS)", count: lopendPos, color: "var(--color-lopend-pos)" },
-    { label: "Lopend", count: lopend, color: "var(--color-lopend)" },
-    { label: "Prospectie", count: prospectie, color: "var(--color-prospectie)" },
-    { label: "Uitgesteld", count: uitgesteld, color: "var(--color-uitgesteld)" },
-    { label: "Afgekeurd", count: afgekeurd, color: "var(--color-afgekeurd)" },
-    { label: "Geen", count: none, color: "var(--color-none)" },
-  ];
+  const counts = useMemo(() => {
+    const acc = {} as Record<CategoryKey, number>;
+    for (const m of municipalities) {
+      const key = categoryOf(m);
+      acc[key] = (acc[key] ?? 0) + 1;
+    }
+    return acc;
+  }, [municipalities]);
 
   if (loading) {
     return (
@@ -73,21 +59,44 @@ function App() {
       className="fixed inset-0 overflow-hidden bg-panel"
       onClick={() => setSelected(null)}
     >
-      <Map municipalities={municipalities} selected={selected} onSelect={setSelected} />
+      <Map
+        municipalities={municipalities}
+        selected={selected}
+        onSelect={setSelected}
+        visibleCategories={visible}
+      />
       <MunicipalitySearch municipalities={municipalities} onSelect={setSelected} />
 
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
-        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs tracking-wide text-sub">
-          {stats.map((s) => (
-            <span key={s.label} className="flex items-center gap-2">
+        <div className="pointer-events-auto mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs tracking-wide text-sub">
+          {CATEGORIES.map((c) => (
+            <label
+              key={c.key}
+              className="flex cursor-pointer items-center gap-2 select-none hover:text-ink"
+            >
+              <input
+                type="checkbox"
+                checked={visible.has(c.key)}
+                onChange={() => toggleCategory(c.key)}
+                className="h-3 w-3 accent-eagle"
+              />
               <span
                 className="inline-block h-2.5 w-2.5 rounded-full border border-white/10"
-                style={{ backgroundColor: s.color }}
+                style={{ backgroundColor: c.color }}
               />
-              {s.label} ({s.count})
-            </span>
+              {c.label} ({counts[c.key] ?? 0})
+            </label>
           ))}
+          <button
+            type="button"
+            onClick={() =>
+              setVisible(allVisible ? new Set() : new Set(CATEGORIES.map((c) => c.key)))
+            }
+            className="rounded border border-line px-2 py-0.5 uppercase tracking-wide hover:text-ink"
+          >
+            {allVisible ? "Niets" : "Alles"}
+          </button>
         </div>
       </header>
 

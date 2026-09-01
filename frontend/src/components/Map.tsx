@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ComposableMap, Geographies, Geography, createCoordinates } from "@vnedyalk0v/react19-simple-maps";
 import belgiumTopology from "../data/belgium.json";
 import type { Municipality } from "../types/municipality";
+import { categoryOf, CATEGORY_COLORS, type CategoryKey } from "../lib/categories";
 
 function useViewportSize() {
   const [size, setSize] = useState(() => ({
@@ -24,23 +25,10 @@ interface MapProps {
   municipalities: Municipality[];
   selected: Municipality | null;
   onSelect: (municipality: Municipality | null) => void;
+  visibleCategories: Set<CategoryKey>;
 }
 
-function colorFor(municipality: Municipality | undefined): string {
-  if (!municipality) return "var(--color-none)";
-  if (municipality.status === "Afgekeurd") return "var(--color-afgekeurd)";
-  if (municipality.status === "Prospectie") return "var(--color-prospectie)";
-  if (municipality.status === "Uitgesteld") return "var(--color-uitgesteld)";
-  if (municipality.status === "Lopend") {
-    return municipality.isPosCustomer ? "var(--color-lopend-pos)" : "var(--color-lopend)";
-  }
-  if (municipality.isEagleBeActive && municipality.isPosCustomer) return "var(--color-eagle-pos)";
-  if (municipality.isEagleBeActive) return "var(--color-eagle)";
-  if (municipality.isPosCustomer) return "var(--color-pos)";
-  return "var(--color-none)";
-}
-
-export default function Map({ municipalities, selected, onSelect }: MapProps) {
+export default function Map({ municipalities, selected, onSelect, visibleCategories }: MapProps) {
   const { width, height } = useViewportSize();
 
   const byRefnis: Record<string, Municipality> = Object.fromEntries(
@@ -74,26 +62,35 @@ export default function Map({ municipalities, selected, onSelect }: MapProps) {
             const props = geo.properties as MunicipalityFeatureProperties;
             const municipality = byRefnis[props.nis];
             const isSelected = selectedNis != null && props.nis === selectedNis;
+            const filteredOut =
+              !isSelected && !visibleCategories.has(categoryOf(municipality));
             return (
               <Geography
                 key={props.nis}
                 geography={geo}
-                fill={colorFor(municipality)}
+                fill={CATEGORY_COLORS[categoryOf(municipality)]}
+                fillOpacity={filteredOut ? 0.05 : 1}
                 stroke={isSelected ? "#ffffff" : "var(--color-ink)"}
                 strokeWidth={isSelected ? 1.75 : 0.25}
+                strokeOpacity={filteredOut ? 0.3 : 1}
                 onClick={(event) => {
                   event.stopPropagation();
+                  if (filteredOut) return;
                   onSelect(municipality ?? null);
                 }}
                 style={{
                   default: {
                     outline: "none",
-                    cursor: "pointer",
+                    cursor: filteredOut ? "default" : "pointer",
                     filter: isSelected
                       ? "brightness(1.4) drop-shadow(0 0 3px rgba(255,255,255,0.7))"
                       : undefined,
                   },
-                  hover: { outline: "none", filter: "brightness(0.85)", cursor: "pointer" },
+                  hover: {
+                    outline: "none",
+                    filter: filteredOut ? undefined : "brightness(0.85)",
+                    cursor: filteredOut ? "default" : "pointer",
+                  },
                   pressed: { outline: "none" },
                 }}
               />
