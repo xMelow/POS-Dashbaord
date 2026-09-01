@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Map from "./components/Map";
 import MunicipalitySearch from "./components/MunicipalitySearch";
-import GemeentePanel from "./components/GemeentePanel";
+import MunicipalityPanel from "./components/MunicipalityPanel";
 import LegendFilter from "./components/LegendFilter";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
@@ -82,17 +82,14 @@ function App() {
         allVisible={allVisible}
       />
 
-      <div
-        className="absolute left-6 top-60 max-w-[20rem] min-w-[10rem] rounded-md border border-line bg-bg/90 p-3 font-mono text-sm"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <p className="mb-2 uppercase tracking-wide text-sub">Gemeente</p>
-        {selected ? (
-          <GemeentePanel key={selected.id} municipality={selected} onUpdated={handleUpdated} />
-        ) : (
-          <p className="text-sub">Click a gemeente</p>
-        )}
-      </div>
+      {selected && (
+        <MunicipalityPanel
+          key={selected.id}
+          municipality={selected}
+          onUpdated={handleUpdated}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </div>
   );
 }
