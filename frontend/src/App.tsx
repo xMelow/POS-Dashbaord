@@ -10,6 +10,7 @@ import { CATEGORIES, categoryOf, type CategoryKey } from "./lib/categories";
 function App() {
   const { municipalities, loading, error, replaceMunicipality } = useMunicipalities();
   const [selected, setSelected] = useState<Municipality | null>(null);
+  const [hovered, setHovered] = useState<Municipality | null>(null);
 
   function handleUpdated(updated: Municipality) {
     replaceMunicipality(updated);
@@ -63,11 +64,12 @@ function App() {
       <Map
         municipalities={municipalities}
         selected={selected}
+        hovered={hovered}
         onSelect={setSelected}
         visibleCategories={visible}
       />
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
-        <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe Dashboard</h1>
       </header>
 
       <div className="absolute left-6 top-24 w-[17.5rem]">
@@ -87,6 +89,7 @@ function App() {
         visibleCategories={visible}
         selected={selected}
         onSelect={setSelected}
+        onHover={setHovered}
       />
 
       {selected && (

@@ -7,6 +7,7 @@ interface MunicipalityBrowserProps {
   visibleCategories: Set<CategoryKey>;
   selected: Municipality | null;
   onSelect: (municipality: Municipality) => void;
+  onHover?: (municipality: Municipality | null) => void;
 }
 
 export default function MunicipalityBrowser({
@@ -14,6 +15,7 @@ export default function MunicipalityBrowser({
   visibleCategories,
   selected,
   onSelect,
+  onHover,
 }: MunicipalityBrowserProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +81,10 @@ export default function MunicipalityBrowser({
 
       <p className="mb-2 mt-2.5 uppercase tracking-wide text-sub">Gemeenten ({total})</p>
 
-      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 text-sub">
+      <div
+        className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 text-sub"
+        onMouseLeave={() => onHover?.(null)}
+      >
         {groups.map(({ province, list }) => (
           <div key={province}>
             <p className="sticky top-0 bg-bg/95 py-0.5 text-[11px] uppercase tracking-wide text-eagle">
@@ -93,6 +98,8 @@ export default function MunicipalityBrowser({
                     <button
                       type="button"
                       onClick={() => onSelect(m)}
+                      onMouseEnter={() => onHover?.(m)}
+                      onFocus={() => onHover?.(m)}
                       className={`flex w-full items-center gap-2 rounded px-1 py-1 text-left hover:bg-line/30 hover:text-ink ${
                         isSelected ? "bg-line/50 text-ink" : ""
                       }`}
