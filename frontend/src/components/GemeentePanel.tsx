@@ -35,8 +35,7 @@ export default function GemeentePanel({ municipality, onUpdated }: GemeentePanel
     }
   }
 
-  const fieldClass =
-    "w-full rounded border border-line bg-panel px-2 py-1 text-ink focus:border-eagle focus:outline-none";
+  const fieldClass = "w-full rounded border border-line bg-panel px-2 py-1 text-ink focus:border-eagle focus:outline-none";
 
   return (
     <dl className="space-y-2">
@@ -75,7 +74,7 @@ export default function GemeentePanel({ municipality, onUpdated }: GemeentePanel
         {saving ? "Bezig…" : "Opslaan"}
       </button>
 
-      {error && <p className="text-pos">{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
     </dl>
   );
 }

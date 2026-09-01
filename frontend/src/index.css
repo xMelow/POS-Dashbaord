@@ -8,13 +8,14 @@
   --color-line: #2a3a5c;
   --color-ink: #e7edf7;
   --color-sub: #8fa2c2;
-  --color-eagle: #38bdf8;
-  --color-pos: #f5a524;
+  --color-eagle: #4cc9f0;
+  --color-pos: #4361ee;
+  --color-prospectie: #ffb703;
+  --color-lopend: #06d6a0;
+  --color-uitgesteld: #c77dff;
+  --color-afgekeurd: #e5383b;
   --color-none: #24314d;
-  --color-afgekeurd: #ef4444;
-  --color-prospectie: #22c55e;
-  --color-uitgesteld: #a855f7;
-  --color-lopend: #facc15;
+  --color-danger: #e5383b;
 }
 
 body {

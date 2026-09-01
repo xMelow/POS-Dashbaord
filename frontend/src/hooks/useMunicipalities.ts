@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchMunicipalities, type Municipality } from "../api/client";
+import { fetchMunicipalities } from "../api/client";
+import type { Municipality } from "../types/municipality";
 
 interface UseMunicipalitiesResult {
   municipalities: Municipality[];

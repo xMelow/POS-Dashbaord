@@ -51,7 +51,8 @@ export default function MunicipalitySearch({ municipalities, onSelect }: Municip
           placeholder="Zoek gemeente…"
           className="w-full rounded-md border border-line bg-bg/90 py-2 pl-3 pr-8 text-ink placeholder:text-sub focus:border-eagle focus:outline-none"
         />
-        {query && (
+
+        {query ? (
           <button
             type="button"
             aria-label="Wissen"
@@ -61,6 +62,13 @@ export default function MunicipalitySearch({ municipalities, onSelect }: Municip
           >
             ×
           </button>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 flex w-8 items-center justify-center text-sub"
+          >
+            ⌕
+          </span>
         )}
       </div>
       {open && matches.length > 0 && (

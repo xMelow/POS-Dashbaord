@@ -59,8 +59,6 @@ export default function Map({ municipalities, selected, onSelect }: MapProps) {
     >
       <Geographies geography={belgiumTopology}>
         {({ geographies }) => {
-          // Draw the selected municipality last so its ring paints on top of
-          // its neighbours instead of being overdrawn by them.
           const ordered = selectedNis
             ? [...geographies].sort((a, b) => {
                 const aSel = (a.properties as MunicipalityFeatureProperties).nis === selectedNis;

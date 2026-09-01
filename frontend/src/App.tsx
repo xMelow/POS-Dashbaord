@@ -5,7 +5,6 @@ import GemeentePanel from "./components/GemeentePanel";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
 
-
 function App() {
   const { municipalities, loading, error, replaceMunicipality } = useMunicipalities();
   const [selected, setSelected] = useState<Municipality | null>(null);
@@ -15,7 +14,6 @@ function App() {
     setSelected(updated);
   }
 
-  // Statuses that colour the map on their own, overriding the product colour.
   const STATUS_COLORS: Record<string, string> = {
     Prospectie: "var(--color-prospectie)",
     Uitgesteld: "var(--color-uitgesteld)",
@@ -39,9 +37,9 @@ function App() {
   const stats = [
     { label: "EagleBe", count: eagle, color: "var(--color-eagle)" },
     { label: "Park-O-Sign", count: posOnly, color: "var(--color-pos)" },
+    { label: "Lopend", count: lopend, color: "var(--color-lopend)" },
     { label: "Prospectie", count: prospectie, color: "var(--color-prospectie)" },
     { label: "Uitgesteld", count: uitgesteld, color: "var(--color-uitgesteld)" },
-    { label: "Lopend", count: lopend, color: "var(--color-lopend)" },
     { label: "Afgekeurd", count: afgekeurd, color: "var(--color-afgekeurd)" },
     { label: "Geen", count: none, color: "var(--color-none)" },
   ];
@@ -56,7 +54,7 @@ function App() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center font-mono text-sm text-pos">
+      <div className="flex min-h-screen items-center justify-center font-mono text-sm text-danger">
         Failed to load: {error}
       </div>
     );
