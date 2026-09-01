@@ -1,22 +1,30 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { categoryOf, CATEGORY_COLORS, type CategoryKey } from "../lib/categories";
 import type { Municipality } from "../types/municipality";
 
-interface MunicipalityListProps {
+interface MunicipalityBrowserProps {
   municipalities: Municipality[];
   visibleCategories: Set<CategoryKey>;
   selected: Municipality | null;
   onSelect: (municipality: Municipality) => void;
 }
 
-export default function MunicipalityList({
+export default function MunicipalityBrowser({
   municipalities,
   visibleCategories,
   selected,
   onSelect,
-}: MunicipalityListProps) {
+}: MunicipalityBrowserProps) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { groups, total } = useMemo(() => {
-    const filtered = municipalities.filter((m) => visibleCategories.has(categoryOf(m)));
+    const q = query.trim().toLowerCase();
+    const filtered = municipalities.filter(
+      (m) =>
+        visibleCategories.has(categoryOf(m)) &&
+        (q === "" || m.name.toLowerCase().includes(q)),
+    );
     const byProvince = new Map<string, Municipality[]>();
     for (const m of filtered) {
       const province = m.province || "—";
@@ -31,14 +39,46 @@ export default function MunicipalityList({
         list: list.sort((a, b) => a.name.localeCompare(b.name)),
       }));
     return { groups, total: filtered.length };
-  }, [municipalities, visibleCategories]);
+  }, [municipalities, visibleCategories, query]);
 
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
+      className="absolute bottom-6 right-6 top-24 flex w-[18rem] flex-col rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
       onClick={(e) => e.stopPropagation()}
     >
-      <p className="mb-2 uppercase tracking-wide text-sub">Gemeenten ({total})</p>
+      <div className="relative shrink-0">
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Zoek gemeente…"
+          className="w-full rounded border border-line bg-panel py-1.5 pl-2.5 pr-8 text-ink placeholder:text-sub focus:border-eagle focus:outline-none"
+        />
+        {query ? (
+          <button
+            type="button"
+            aria-label="Wissen"
+            onClick={() => {
+              setQuery("");
+              inputRef.current?.focus();
+            }}
+            className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-sub hover:text-ink"
+          >
+            ×
+          </button>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 flex w-8 items-center justify-center text-sub"
+          >
+            ⌕
+          </span>
+        )}
+      </div>
+
+      <p className="mb-2 mt-2.5 uppercase tracking-wide text-sub">Gemeenten ({total})</p>
+
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 text-sub">
         {groups.map(({ province, list }) => (
           <div key={province}>

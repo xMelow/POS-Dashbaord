@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import Map from "./components/Map";
-import MunicipalitySearch from "./components/MunicipalitySearch";
+import MunicipalityBrowser from "./components/MunicipalityBrowser";
 import MunicipalityPanel from "./components/MunicipalityPanel";
 import LegendFilter from "./components/LegendFilter";
-import MunicipalityList from "./components/MunicipalityList";
 import { useMunicipalities } from "./hooks/useMunicipalities";
 import type { Municipality } from "./types/municipality";
 import { CATEGORIES, categoryOf, type CategoryKey } from "./lib/categories";
@@ -67,13 +66,11 @@ function App() {
         onSelect={setSelected}
         visibleCategories={visible}
       />
-      <MunicipalitySearch municipalities={municipalities} onSelect={setSelected} />
-
       <header className="pointer-events-none absolute inset-x-0 top-0 px-6 pt-6 pb-4">
         <h1 className="text-3xl font-bold tracking-tight">Park-O-Sign &amp; EagleBe</h1>
       </header>
 
-      <div className="absolute bottom-6 left-6 top-24 flex w-[17.5rem] flex-col gap-3">
+      <div className="absolute left-6 top-24 w-[17.5rem]">
         <LegendFilter
           visible={visible}
           counts={counts}
@@ -83,13 +80,14 @@ function App() {
           }
           allVisible={allVisible}
         />
-        <MunicipalityList
-          municipalities={municipalities}
-          visibleCategories={visible}
-          selected={selected}
-          onSelect={setSelected}
-        />
       </div>
+
+      <MunicipalityBrowser
+        municipalities={municipalities}
+        visibleCategories={visible}
+        selected={selected}
+        onSelect={setSelected}
+      />
 
       {selected && (
         <MunicipalityPanel
