@@ -1,21 +1,7 @@
-import { useEffect, useState } from "react";
 import { ComposableMap, Geographies, Geography, createCoordinates } from "@vnedyalk0v/react19-simple-maps";
 import belgiumTopology from "../data/belgium.json";
 import type { Municipality } from "../types/municipality";
 import { categoryOf, CATEGORY_COLORS, type CategoryKey } from "../lib/categories";
-
-function useViewportSize() {
-  const [size, setSize] = useState(() => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }));
-  useEffect(() => {
-    const onResize = () => setSize({ width: window.innerWidth, height: window.innerHeight });
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  return size;
-}
 
 interface MunicipalityFeatureProperties {
   nis: string;
@@ -30,8 +16,6 @@ interface MapProps {
 }
 
 export default function Map({ municipalities, selected, hovered, onSelect, visibleCategories }: MapProps) {
-  const { width, height } = useViewportSize();
-
   const byRefnis: Record<string, Municipality> = Object.fromEntries(
     municipalities.filter((m) => m.refnisCode).map((m) => [m.refnisCode as string, m])
   );
@@ -43,11 +27,11 @@ export default function Map({ municipalities, selected, hovered, onSelect, visib
     <ComposableMap
       projection="geoMercator"
       projectionConfig={{
-        center: createCoordinates(4.5, 50.6),
-        scale: Math.min(10000, Math.max(width, height) * 12),
+        center: createCoordinates(4.6, 50.5),
+        scale: 10000,
       }}
-      width={width}
-      height={height}
+      width={700}
+      height={700}
       style={{ width: "100%", height: "100%" }}
     >
       <Geographies geography={belgiumTopology}>
