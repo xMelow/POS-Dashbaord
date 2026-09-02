@@ -74,20 +74,19 @@ export default function Map({ municipalities, selected, hovered, onSelect, visib
               <Geography
                 key={props.nis}
                 geography={geo}
-                fill={CATEGORY_COLORS[categoryOf(municipality)]}
-                fillOpacity={filteredOut ? 0.05 : 1}
+                fill={CATEGORY_COLORS[filteredOut ? "none" : categoryOf(municipality)]}
+                fillOpacity={1}
                 stroke={isSelected || isHovered ? "#ffffff" : "var(--color-ink)"}
                 strokeWidth={isSelected ? 1.75 : isHovered ? 1.25 : 0.25}
-                strokeOpacity={filteredOut ? 0.3 : 1}
+                strokeOpacity={1}
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (filteredOut) return;
                   onSelect(municipality ?? null);
                 }}
                 style={{
                   default: {
                     outline: "none",
-                    cursor: filteredOut ? "default" : "pointer",
+                    cursor: "pointer",
                     filter: isSelected
                       ? "brightness(1.4) drop-shadow(0 0 3px rgba(255,255,255,0.7))"
                       : isHovered
@@ -96,8 +95,8 @@ export default function Map({ municipalities, selected, hovered, onSelect, visib
                   },
                   hover: {
                     outline: "none",
-                    filter: filteredOut ? undefined : "brightness(0.85)",
-                    cursor: filteredOut ? "default" : "pointer",
+                    filter: "brightness(0.85)",
+                    cursor: "pointer",
                   },
                   pressed: { outline: "none" },
                 }}

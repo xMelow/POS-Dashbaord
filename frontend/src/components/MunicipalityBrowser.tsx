@@ -22,20 +22,24 @@ export default function MunicipalityBrowser({
 
   const { groups, total } = useMemo(() => {
     const q = query.trim().toLowerCase();
+
     const filtered = municipalities.filter(
       (m) =>
         visibleCategories.has(categoryOf(m)) &&
         (q === "" || m.name.toLowerCase().includes(q)),
     );
-    const byProvince = new Map<string, Municipality[]>();
-    for (const m of filtered) {
-      const province = m.province || "—";
-      const list = byProvince.get(province);
-      if (list) list.push(m);
-      else byProvince.set(province, [m]);
+
+    const municiaplitiesByProvince = new Map<string, Municipality[]>();
+
+    for (const entrie of filtered) {
+      const province = entrie.province || "—";
+      const list = municiaplitiesByProvince.get(province);
+      if (list) list.push(entrie);
+      else municiaplitiesByProvince.set(province, [entrie]);
     }
-    const groups = [...byProvince.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
+
+    const groups = [...municiaplitiesByProvince.entries()]
+      .sort(([provinceA], [provinceB]) => provinceA.localeCompare(provinceB))
       .map(([province, list]) => ({
         province,
         list: list.sort((a, b) => a.name.localeCompare(b.name)),
@@ -48,7 +52,9 @@ export default function MunicipalityBrowser({
       className="absolute bottom-6 right-6 top-24 flex w-[18rem] flex-col rounded-md border border-line bg-bg/90 p-2.5 font-mono text-[13px]"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="relative shrink-0">
+      <p className="mb-2 uppercase tracking-wide text-sub">Gemeenten ({total})</p>
+
+      <div className="mb-4 relative shrink-0">
         <input
           ref={inputRef}
           type="text"
@@ -78,8 +84,6 @@ export default function MunicipalityBrowser({
           </span>
         )}
       </div>
-
-      <p className="mb-2 mt-2.5 uppercase tracking-wide text-sub">Gemeenten ({total})</p>
 
       <div
         className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 text-sub"

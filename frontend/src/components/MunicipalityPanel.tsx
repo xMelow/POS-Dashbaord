@@ -37,6 +37,7 @@ export default function MunicipalityPanel({ municipality, onUpdated, onClose }: 
     try {
       const updated = await updateMunicipality(municipality.id, { setup, status });
       onUpdated(updated);
+      onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Opslaan mislukt");
     } finally {
