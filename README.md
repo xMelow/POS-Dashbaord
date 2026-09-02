@@ -7,23 +7,25 @@ in place; changes are written straight to the database.
 
 ## Preview
 
-![preview image of the dashboard](dashboardPreview.png)
+![dashbaord preview image](previewImage.png)
 
 ## Stack
 
-| Part      | Tech                                                                    |
-|-----------|-----------------------------------------------------------------------  |
-| Frontend  | React 19 + TypeScript, Vite, Tailwind CSS v4, `react19-simple-maps`     |
-| Backend   | ASP.NET Core (.NET 10) Web API, EF Core + SQLite                        |
-| Import    | Python (`pandas` + `openpyxl`) one-shot Excel → SQLite loader          |
+| Part      | Tech                                                                        |
+|-----------|----------------------------------------------------------------------------  |
+| Frontend  | React 19 + TypeScript, Vite, Tailwind CSS v4, `@vnedyalk0v/react19-simple-maps` |
+| Backend   | ASP.NET Core (.NET 10) Web API, EF Core + SQLite                             |
+| Import    | Python (`pandas` + `openpyxl`) one-shot Excel → SQLite loader               |
 
 ## Repository layout
 
 ```
-backend/PosDashbaord.Api/   ASP.NET Core API (controllers, EF Core model, SQLite)
-frontend/                   Vite React app (map, search, edit panel)
-scripts/import_excel.py     Excel → SQLite reseed script
+backend/PosDashbaord.Api/        ASP.NET Core API (controllers, EF Core model, SQLite)
+frontend/                        Vite React app
+frontend/src/components/         Map, LegendFilter, MunicipalityBrowser, MunicipalityPanel
+frontend/src/lib/categories.ts   Category (colour) derivation from setup + status
 frontend/src/data/belgium.json   TopoJSON of Belgian municipalities (map + NIS lookup)
+scripts/import_excel.py          Excel → SQLite reseed script
 ```
 
 ## Running locally
@@ -73,15 +75,15 @@ Opens on `http://localhost:5173`. The API base URL is hardcoded in
 
 Base: `http://localhost:5093/api`
 
-| Method | Route                     | Body                          | Description                          |
-|--------|---------------------------|-------------------------------|--------------------------------------|
-| GET    | `/municipalities`         | —                             | All municipalities                   |
-| POST   | `/municipalities/{id}`    | `{ setup, status }`           | Update one; returns the updated row  |
+| Method | Route                     | Body                          | Description                                     |
+|--------|---------------------------|-------------------------------|------------------------------------------------|
+| GET    | `/municipalities`         | —                             | All municipalities                             |
+| POST   | `/municipalities/{id}`    | `{ setup, status }`           | Update one; returns the updated row, `404` if unknown id |
 
 `setup` is one of `Geen` / `Park-O-Sign` / `EagleBe`. The controller derives
-`isPosCustomer` / `isEagleBeActive` from it and stamps `lastUpdated` (UTC).
-`status` is the pipeline state: `""`, `Prospectie`, `Afgekeurd`, `Uitgesteld`,
-`Lopend`, `Order`.
+`isPosCustomer` / `isEagleBeActive` from it and stamps `lastUpdated` (UTC,
+`"yyyy-MM-dd HH:mm:ss"`). `status` is the pipeline state: `""`, `Prospectie`,
+`Afgekeurd`, `Uitgesteld`, `Lopend`, `Order`.
 
 ## Data model
 
@@ -91,10 +93,16 @@ Base: `http://localhost:5093/api`
 
 ## Frontend behaviour
 
-- **Map** — each gemeente is filled by status color when it has a pipeline
-  status, otherwise by product (EagleBe / Park-O-Sign / Geen). Header legend
-  shows live counts. Click a gemeente to select it; click empty space to
-  deselect.
-- **Search** — type-ahead by name (top 8 matches), Dutch/French names.
+- **Map** — each gemeente is filled by its category colour (see
+  `lib/categories.ts`): pipeline status first (`Afgekeurd`, `Prospectie`,
+  `Uitgesteld`, `Lopend` / `Lopend (POS)`), otherwise product (`EagleBe`,
+  `Park-O-Sign`, `Geen`). Click a gemeente to select it (white outline); click
+  empty space to deselect.
+- **Filter** (left panel) — one checkbox per category with live counts, plus an
+  **Alles / Niets** toggle. Unchecking a category dims those gemeenten to the
+  `Geen` colour on the map (still clickable) and drops them from the list.
+- **Gemeenten** (right panel) — full list grouped by province with counts and a
+  search box that filters by name. Hovering a row highlights that gemeente on
+  the map; clicking selects it.
 - **Gemeente panel** — edit `Setup` and `Status`; **Opslaan** POSTs the change,
-  which updates the map and the database.
+  which updates the map and the database. `Esc` or **×** closes it.
